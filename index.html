@@ -1,0 +1,361 @@
+<title>AgentBib — Your AI coding agents, in the notch</title>
+<meta name="description" content="AgentBib lives in your MacBook notch — answer Claude Code permission prompts, watch every session, and track cost & usage. On your Mac and your phone. One-time, lifetime.">
+<style>
+  :root{
+    --bg:#08090a; --bg2:#0c120e; --panel:rgba(255,255,255,.045); --panel2:rgba(255,255,255,.02);
+    --edge:rgba(255,255,255,.09); --edge2:rgba(255,255,255,.14);
+    --ink:#ecefec; --muted:#93a399; --faint:#5e6b62;
+    --accent:#4fcc85; --accent-deep:#2fae5f; --claude:#d9853f; --codex:#1ab894;
+    --amber:#edb04d; --info:#5aa9f0;
+    --max:1080px;
+  }
+  *{box-sizing:border-box;margin:0}
+  html{scroll-behavior:smooth}
+  body{
+    background:
+      radial-gradient(120% 80% at 50% -10%, rgba(79,204,133,.10), transparent 55%),
+      var(--bg);
+    color:var(--ink);
+    font-family:-apple-system,system-ui,"Segoe UI",Roboto,sans-serif;
+    line-height:1.55; -webkit-font-smoothing:antialiased; overflow-x:hidden;
+  }
+  .mono{font-family:ui-monospace,"SF Mono",Menlo,monospace}
+  .tnum{font-variant-numeric:tabular-nums}
+  a{color:inherit;text-decoration:none}
+  .wrap{max-width:var(--max);margin:0 auto;padding:0 22px}
+  .accent{color:var(--accent)}
+
+  /* nav */
+  nav{position:sticky;top:0;z-index:50;backdrop-filter:blur(12px);
+    background:rgba(8,9,10,.66);border-bottom:1px solid var(--edge)}
+  nav .row{display:flex;align-items:center;gap:14px;height:58px}
+  .brand{display:flex;align-items:center;gap:9px;font-weight:750;font-size:16px;letter-spacing:-.01em}
+  .brand svg{width:26px;height:26px}
+  nav .links{margin-left:auto;display:flex;gap:22px;align-items:center;font-size:14px;color:var(--muted)}
+  nav .links a:hover{color:var(--ink)}
+  .btn{display:inline-flex;align-items:center;gap:8px;font-weight:650;border-radius:11px;
+    padding:10px 16px;font-size:14px;cursor:pointer;border:0;transition:transform .12s,filter .12s}
+  .btn:hover{transform:translateY(-1px)}
+  .btn.primary{background:linear-gradient(180deg,var(--accent),var(--accent-deep));color:#04160c}
+  .btn.primary:hover{filter:brightness(1.06)}
+  .btn.ghost{background:var(--panel);color:var(--ink);border:1px solid var(--edge2)}
+  @media(max-width:640px){nav .links a.nav-hide{display:none}}
+
+  /* hero */
+  header{padding:26px 0 70px;text-align:center;position:relative}
+  .notch-stage{display:flex;justify-content:center;margin:8px 0 40px}
+  .notch{position:relative;width:min(560px,94vw)}
+  /* the black notch tab at the very top */
+  .notch .tab{height:26px;width:200px;margin:0 auto;background:#000;
+    border-radius:0 0 16px 16px;position:relative;z-index:2}
+  /* the panel hanging from the notch */
+  .panel{background:#0a0b0d;border:1px solid rgba(255,255,255,.08);border-top:0;
+    border-radius:0 0 22px 22px;margin-top:-1px;padding:20px 20px 18px;
+    box-shadow:0 40px 90px -30px rgba(0,0,0,.8),0 0 0 1px rgba(0,0,0,.4);
+    text-align:left;overflow:hidden}
+  .panel .glow{position:absolute;inset:0;background:radial-gradient(60% 70% at 50% 0%,rgba(79,204,133,.14),transparent 60%);pointer-events:none}
+  .p-head{display:flex;align-items:center;gap:12px;position:relative}
+  .sesscard{margin-top:14px;display:flex;align-items:center;gap:11px;padding:11px 12px;
+    background:var(--panel2);border:1px solid var(--edge);border-radius:13px;position:relative}
+  .sesscard .nm{font-size:13.5px;font-weight:650}
+  .sesscard .rp{font-size:12px;color:var(--info)}
+  .sesscard .tm{margin-left:auto;font-size:12px;color:var(--faint)}
+  .ctx{margin-top:11px;position:relative}
+  .ctx .lab{display:flex;justify-content:space-between;font-size:10px;color:var(--faint);letter-spacing:.08em;font-weight:700;text-transform:uppercase}
+  .ctx .bar{height:5px;border-radius:5px;background:rgba(255,255,255,.08);margin-top:5px;overflow:hidden}
+  .ctx .bar i{display:block;height:100%;width:97%;background:linear-gradient(90deg,var(--accent),var(--amber),#f77069);border-radius:5px}
+  /* chip avatar with bloom */
+  .avchip{width:36px;height:36px;border-radius:9px;flex:none;display:grid;place-items:center;
+    background:linear-gradient(180deg,rgba(217,133,63,.3),rgba(255,255,255,.05))}
+  .kpis{display:flex;gap:8px;margin-top:14px;position:relative}
+  .kchip{flex:1;background:var(--panel2);border:1px solid var(--edge);border-radius:11px;padding:8px 10px}
+  .kchip .l{font-size:9.5px;color:var(--faint);text-transform:uppercase;letter-spacing:.05em}
+  .kchip .v{font-size:15px;font-weight:750;margin-top:2px}
+
+  .eyebrow{font-size:12.5px;font-weight:650;letter-spacing:.14em;text-transform:uppercase;color:var(--accent);margin-bottom:16px}
+  h1{font-size:clamp(34px,6.2vw,60px);line-height:1.02;letter-spacing:-.03em;font-weight:800;text-wrap:balance;margin-bottom:18px}
+  h1 em{font-style:normal;color:var(--accent)}
+  .lede{font-size:clamp(16px,2.2vw,19px);color:var(--muted);max-width:60ch;margin:0 auto 28px}
+  .cta{display:flex;gap:12px;justify-content:center;flex-wrap:wrap}
+  .cta .btn{padding:14px 24px;font-size:15.5px}
+  .trust{margin-top:20px;font-size:13px;color:var(--faint)}
+  .trust b{color:var(--muted);font-weight:600}
+
+  section{padding:70px 0;border-top:1px solid var(--edge)}
+  .h2{font-size:clamp(26px,4vw,36px);letter-spacing:-.02em;font-weight:780;text-wrap:balance}
+  .sub{color:var(--muted);font-size:16px;margin-top:10px;max-width:56ch}
+  .center{text-align:center;margin:0 auto}
+
+  .feats{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin-top:38px}
+  @media(max-width:820px){.feats{grid-template-columns:1fr 1fr}}
+  @media(max-width:520px){.feats{grid-template-columns:1fr}}
+  .feat{background:linear-gradient(180deg,var(--panel),var(--panel2));border:1px solid var(--edge);
+    border-radius:16px;padding:20px}
+  .feat .ic{width:40px;height:40px;border-radius:11px;display:grid;place-items:center;margin-bottom:14px;
+    background:rgba(79,204,133,.13);color:var(--accent)}
+  .feat .ic svg{width:20px;height:20px}
+  .feat h3{font-size:16px;font-weight:680;margin-bottom:5px;letter-spacing:-.01em}
+  .feat p{font-size:14px;color:var(--muted)}
+
+  .steps{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin-top:38px;counter-reset:s}
+  @media(max-width:720px){.steps{grid-template-columns:1fr}}
+  .step{background:var(--panel2);border:1px solid var(--edge);border-radius:16px;padding:22px;position:relative}
+  .step .n{font-size:13px;font-weight:800;color:var(--accent);letter-spacing:.1em}
+  .step h3{font-size:17px;font-weight:680;margin:8px 0 6px}
+  .step p{font-size:14px;color:var(--muted)}
+
+  .prices{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin-top:38px;align-items:stretch}
+  @media(max-width:820px){.prices{grid-template-columns:1fr;max-width:420px;margin-left:auto;margin-right:auto}}
+  .price{background:linear-gradient(180deg,var(--panel),var(--panel2));border:1px solid var(--edge);
+    border-radius:18px;padding:24px;display:flex;flex-direction:column}
+  .price.pop{border-color:rgba(79,204,133,.5);box-shadow:0 0 0 1px rgba(79,204,133,.25),0 24px 60px -30px rgba(79,204,133,.4)}
+  .price .tag{align-self:flex-start;font-size:11px;font-weight:800;letter-spacing:.05em;color:var(--accent);
+    background:rgba(79,204,133,.14);padding:3px 9px;border-radius:20px;margin-bottom:12px;text-transform:uppercase}
+  .price .name{font-size:18px;font-weight:720}
+  .price .macs{font-size:13px;color:var(--muted);margin-top:2px}
+  .price .amt{font-size:38px;font-weight:820;letter-spacing:-.03em;margin:16px 0 2px}
+  .price .amt small{font-size:14px;font-weight:600;color:var(--muted);letter-spacing:0}
+  .price ul{list-style:none;margin:16px 0 20px;padding:0;display:flex;flex-direction:column;gap:9px}
+  .price li{font-size:13.5px;color:var(--muted);display:flex;gap:9px;align-items:flex-start}
+  .price li svg{width:15px;height:15px;color:var(--accent);flex:none;margin-top:2px}
+  .price .btn{margin-top:auto;justify-content:center}
+
+  .faq{max-width:760px;margin:38px auto 0;display:flex;flex-direction:column;gap:0}
+  details{border-bottom:1px solid var(--edge);padding:18px 4px}
+  summary{font-size:16px;font-weight:620;cursor:pointer;list-style:none;display:flex;justify-content:space-between;gap:16px}
+  summary::-webkit-details-marker{display:none}
+  summary::after{content:"+";color:var(--accent);font-weight:700;font-size:20px;line-height:1}
+  details[open] summary::after{content:"–"}
+  details p{color:var(--muted);font-size:14.5px;margin-top:10px;max-width:64ch}
+
+  .final{text-align:center;background:
+    radial-gradient(80% 120% at 50% 0%,rgba(79,204,133,.12),transparent 60%);border-radius:24px;
+    border:1px solid var(--edge);padding:56px 24px;margin-top:14px}
+
+  footer{border-top:1px solid var(--edge);padding:40px 0 60px;color:var(--faint);font-size:13.5px}
+  footer .row{display:flex;flex-wrap:wrap;gap:16px 28px;align-items:center}
+  footer a:hover{color:var(--ink)}
+  footer .legal{margin-left:auto;display:flex;gap:20px}
+  .disc{margin-top:16px;font-size:12px;color:var(--faint);max-width:70ch}
+
+  @media(prefers-reduced-motion:no-preference){
+    .bloom-spin{animation:spin 14s linear infinite;transform-origin:20px 20px}
+    .reveal{opacity:0;transform:translateY(14px);animation:rise .7s cubic-bezier(.2,.7,.3,1) forwards}
+  }
+  @keyframes spin{to{transform:rotate(360deg)}}
+  @keyframes rise{to{opacity:1;transform:none}}
+  :focus-visible{outline:2px solid var(--accent);outline-offset:2px;border-radius:6px}
+</style>
+
+<!-- reusable bloom (defined once, referenced) -->
+<svg width="0" height="0" style="position:absolute" aria-hidden="true"><defs>
+  <g id="bloom">
+    <g class="bloom-spin">
+      <g fill="currentColor">
+        <ellipse cx="20" cy="9" rx="3.1" ry="6.2"/>
+        <ellipse cx="20" cy="9" rx="3.1" ry="6.2" transform="rotate(45 20 20)"/>
+        <ellipse cx="20" cy="9" rx="3.1" ry="6.2" transform="rotate(90 20 20)"/>
+        <ellipse cx="20" cy="9" rx="3.1" ry="6.2" transform="rotate(135 20 20)"/>
+        <ellipse cx="20" cy="9" rx="3.1" ry="6.2" transform="rotate(180 20 20)"/>
+        <ellipse cx="20" cy="9" rx="3.1" ry="6.2" transform="rotate(225 20 20)"/>
+        <ellipse cx="20" cy="9" rx="3.1" ry="6.2" transform="rotate(270 20 20)"/>
+        <ellipse cx="20" cy="9" rx="3.1" ry="6.2" transform="rotate(315 20 20)"/>
+      </g>
+    </g>
+    <circle cx="20" cy="20" r="5.2" fill="#eafff2"/>
+    <circle cx="20" cy="20" r="2.2" fill="#fff"/>
+  </g>
+</defs></svg>
+
+<nav><div class="wrap row">
+  <a class="brand" href="#top"><svg viewBox="0 0 40 40" style="color:var(--accent)"><use href="#bloom"/></svg>AgentBib</a>
+  <div class="links">
+    <a href="#features" class="nav-hide">Features</a>
+    <a href="#how" class="nav-hide">How it works</a>
+    <a href="#pricing">Pricing</a>
+    <a href="#download" class="btn primary" style="padding:8px 14px">Download</a>
+  </div>
+</div></nav>
+
+<header id="top"><div class="wrap">
+  <div class="notch-stage">
+    <div class="notch reveal">
+      <div class="tab"></div>
+      <div class="panel">
+        <div class="glow"></div>
+        <div class="p-head">
+          <div class="avchip"><svg viewBox="0 0 40 40" width="26" height="26" style="color:var(--claude)"><use href="#bloom"/></svg></div>
+          <div>
+            <div style="font-weight:750;font-size:15px">Opus 4.8 <span style="color:var(--accent);font-weight:600;font-size:12px">· working…</span></div>
+            <div style="font-size:12px;color:var(--info)">⌥ apps/frontend · main</div>
+          </div>
+          <div style="margin-left:auto;font-size:12px;color:var(--faint)">2m</div>
+        </div>
+        <div class="ctx">
+          <div class="lab"><span>Context</span><span>194.5k / 200k · 97%</span></div>
+          <div class="bar"><i></i></div>
+        </div>
+        <div class="sesscard">
+          <div class="avchip" style="background:linear-gradient(180deg,rgba(26,184,148,.3),rgba(255,255,255,.05));width:30px;height:30px">
+            <svg viewBox="0 0 40 40" width="22" height="22" style="color:var(--codex)"><use href="#bloom"/></svg>
+          </div>
+          <div><div class="nm">Codex</div><div class="rp">⌥ workspace/api</div></div>
+          <div class="tm">idle · 10m</div>
+        </div>
+        <div class="kpis">
+          <div class="kchip"><div class="l">5-hour</div><div class="v accent tnum">29%</div></div>
+          <div class="kchip"><div class="l">7-day</div><div class="v tnum">12%</div></div>
+          <div class="kchip"><div class="l">💵 Today</div><div class="v tnum">$6.40</div></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <p class="eyebrow">macOS · Claude Code · Codex &amp; more</p>
+  <h1>Your AI coding agents,<br><em>living in your notch.</em></h1>
+  <p class="lede center">AgentBib turns the MacBook notch into mission control — answer permission prompts, watch every session's status, cost &amp; git, and see your usage at a glance. On your Mac, and your phone.</p>
+  <div class="cta">
+    <a href="#download" class="btn primary">Download for macOS ↓</a>
+    <a href="#pricing" class="btn ghost">See pricing</a>
+  </div>
+  <p class="trust"><b>Free 7-day trial</b> · no API key needed · one-time payment, yours forever</p>
+</div></header>
+
+<section id="features"><div class="wrap">
+  <div class="center" style="max-width:56ch">
+    <div class="h2">Stop hunting terminal tabs.</div>
+    <p class="sub center">Running three, four, six Claude Code sessions at once? AgentBib gives you one calm place to see and control them all.</p>
+  </div>
+  <div class="feats">
+    <div class="feat">
+      <div class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 8a6 6 0 0112 0c0 7 3 8 3 8H3s3-1 3-8M10 21h4"/></svg></div>
+      <h3>Answer permissions from the notch</h3>
+      <p>Allow or Deny any session's tool request right from the notch — or your phone. No more digging for the right terminal tab.</p>
+    </div>
+    <div class="feat">
+      <div class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="16" rx="2"/><path d="M3 9h18M8 4v16"/></svg></div>
+      <h3>Watch every session live</h3>
+      <p>Status, model, git branch, files &amp; diff, context fill — a card per session, read straight from the real transcripts.</p>
+    </div>
+    <div class="feat">
+      <div class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 13a9 9 0 1018 0"/><path d="M12 13V4"/></svg></div>
+      <h3>Real cost &amp; usage</h3>
+      <p>Your 5-hour and 7-day limits, plus <b>what you've spent today</b> in real money — on your Mac and phone, at zero extra API cost.</p>
+    </div>
+    <div class="feat">
+      <div class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 4h16v14H4z"/><path d="M8 9l3 3-3 3M13 15h4"/></svg></div>
+      <h3>Jump to the terminal</h3>
+      <p>Click a session card and the exact terminal window running it jumps to the front. iTerm, Terminal, Warp, VS Code &amp; more.</p>
+    </div>
+    <div class="feat">
+      <div class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="7" y="3" width="10" height="18" rx="2"/><path d="M11 18h2"/></svg></div>
+      <h3>On your phone, too</h3>
+      <p>Approve prompts and watch sessions from your iPhone on the same Wi-Fi — the part a Mac-only tool structurally can't do.</p>
+    </div>
+    <div class="feat">
+      <div class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 3v3M12 18v3M3 12h3M18 12h3"/><circle cx="12" cy="12" r="4"/></svg></div>
+      <h3>Rules, quiet hours &amp; delight</h3>
+      <p>Auto-allow safe commands, silence banners on your schedule, editable hotkeys — and a little bloom that celebrates when a job's done.</p>
+    </div>
+  </div>
+</div></section>
+
+<section id="how"><div class="wrap">
+  <div class="center" style="max-width:56ch"><div class="h2">Live in two minutes.</div>
+  <p class="sub center">Download the app. It sets itself up. That's genuinely it.</p></div>
+  <div class="steps">
+    <div class="step"><div class="n">STEP 1</div><h3>Download &amp; open</h3><p>Notarized, universal (Apple Silicon + Intel), macOS 14+. It installs its own Claude Code hooks on first launch — no config.</p></div>
+    <div class="step"><div class="n">STEP 2</div><h3>Try it free for 7 days</h3><p>Full app, every feature, no card. It reuses your existing Claude sign-in — there's no API key to paste.</p></div>
+    <div class="step"><div class="n">STEP 3</div><h3>Buy once, keep forever</h3><p>Unlock right inside the app. One payment, lifetime license, all future updates included. Move it between your Macs anytime.</p></div>
+  </div>
+</div></section>
+
+<section id="pricing"><div class="wrap">
+  <div class="center" style="max-width:56ch"><div class="h2">One payment. Yours forever.</div>
+  <p class="sub center">No subscriptions, ever. Pick how many Macs you'll use it on — every tier has every feature.</p></div>
+  <div class="prices">
+    <div class="price">
+      <div class="name">Solo</div><div class="macs">1 Mac</div>
+      <div class="amt">₹999<small> once</small></div>
+      <ul>
+        <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><path d="M5 12l5 5L20 7"/></svg>Every feature, forever</li>
+        <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><path d="M5 12l5 5L20 7"/></svg>All future updates</li>
+        <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><path d="M5 12l5 5L20 7"/></svg>iPhone companion</li>
+      </ul>
+      <a href="#download" class="btn ghost">Start free trial</a>
+    </div>
+    <div class="price pop">
+      <div class="tag">Most popular</div>
+      <div class="name">Duo</div><div class="macs">2 Macs</div>
+      <div class="amt">₹1,499<small> once</small></div>
+      <ul>
+        <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><path d="M5 12l5 5L20 7"/></svg>Everything in Solo</li>
+        <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><path d="M5 12l5 5L20 7"/></svg>Use on <b>2 Macs</b> — laptop + desktop</li>
+        <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><path d="M5 12l5 5L20 7"/></svg>Move licenses anytime</li>
+      </ul>
+      <a href="#download" class="btn primary">Start free trial</a>
+    </div>
+    <div class="price">
+      <div class="name">Team</div><div class="macs">5 Macs</div>
+      <div class="amt">₹2,499<small> once</small></div>
+      <ul>
+        <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><path d="M5 12l5 5L20 7"/></svg>Everything in Duo</li>
+        <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><path d="M5 12l5 5L20 7"/></svg>Use on <b>5 Macs</b></li>
+        <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><path d="M5 12l5 5L20 7"/></svg>Great for a small team</li>
+      </ul>
+      <a href="#download" class="btn ghost">Start free trial</a>
+    </div>
+  </div>
+  <p class="center" style="color:var(--faint);font-size:13px;margin-top:22px">Prices in INR via Razorpay. 7-day free trial on every tier — no card to start.</p>
+</div></section>
+
+<section id="faq"><div class="wrap">
+  <div class="center"><div class="h2">Questions</div></div>
+  <div class="faq">
+    <details open><summary>Do I need an API key?</summary><p>No. AgentBib securely reuses your existing Claude Code sign-in on your Mac to read your usage — there's nothing to paste, and your token never leaves your machine.</p></details>
+    <details><summary>Is it a subscription?</summary><p>Never. It's a one-time payment for a lifetime license, and all future updates are included. Buy once, own it.</p></details>
+    <details><summary>How many Macs can I use it on?</summary><p>Solo = 1, Duo = 2, Team = 5. You can move your license between Macs anytime — activate on a new one, deactivate an old one to free the slot.</p></details>
+    <details><summary>Does it work with agents other than Claude Code?</summary><p>Yes — Claude Code today, with Codex and other agents detected automatically and shown with their own color. More on the way.</p></details>
+    <details><summary>Is my data private?</summary><p>Everything runs locally on your Mac. The local server is loopback-only by default (not exposed to your network unless you opt in for phone access), and your sign-in token is only ever read to show your own usage.</p></details>
+    <details><summary>What do I need to run it?</summary><p>A Mac on macOS 14 or later — Apple Silicon or Intel. The download is notarized by Apple, so it opens cleanly.</p></details>
+  </div>
+</div></section>
+
+<section id="download"><div class="wrap">
+  <div class="final">
+    <svg viewBox="0 0 40 40" width="52" height="52" style="color:var(--accent)"><use href="#bloom"/></svg>
+    <div class="h2" style="margin-top:16px">Give your agents a home.</div>
+    <p class="sub center" style="margin:12px auto 26px">Download AgentBib, try every feature free for 7 days, and see why the notch was always the right place for this.</p>
+    <div class="cta">
+      <a href="#" class="btn primary" data-download>Download for macOS ↓</a>
+    </div>
+    <p class="trust">Universal · macOS 14+ · notarized · free 7-day trial</p>
+  </div>
+</div></section>
+
+<footer><div class="wrap">
+  <div class="row">
+    <a class="brand" href="#top" style="font-size:15px"><svg viewBox="0 0 40 40" style="color:var(--accent)"><use href="#bloom"/></svg>AgentBib</a>
+    <span style="color:var(--faint)">Your AI coding agents, in the notch.</span>
+    <div class="legal">
+      <a href="privacy.html">Privacy</a>
+      <a href="terms.html">Terms</a>
+      <a href="refund.html">Refunds</a>
+      <a href="mailto:swainbibhuti362@gmail.com">Contact</a>
+    </div>
+  </div>
+  <p class="disc">© <span id="yr">2026</span> AgentBib — operated by Bibhuti Swain, Gujarat, India. Not affiliated with Anthropic. Claude and Claude Code are trademarks of Anthropic. macOS and the MacBook are trademarks of Apple Inc.</p>
+</div></footer>
+
+<script>
+  // scroll-reveal for sections
+  var io=new IntersectionObserver(function(es){es.forEach(function(e){if(e.isIntersecting){e.target.classList.add('reveal');io.unobserve(e.target)}})},{threshold:.12});
+  document.querySelectorAll('section .wrap > *').forEach(function(el){io.observe(el)});
+  // download buttons — wire to your GitHub Releases .dmg when published
+  // Direct download of the current notarized build. When you publish a new version, update
+  // this (or add a stable-named AgentBib.dmg asset and use …/releases/latest/download/AgentBib.dmg).
+  var DMG="https://github.com/bibhuti9/agentbib-releases/releases/latest/download/AgentBib.dmg";
+  document.querySelectorAll('[href="#download"],[data-download]').forEach(function(a){
+    if(DMG!=="#"){a.setAttribute('href',DMG)}
+  });
+</script>
