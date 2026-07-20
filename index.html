@@ -8,380 +8,703 @@
 <link rel="icon" type="image/png" href="favicon.png">
 <link rel="apple-touch-icon" href="favicon.png">
 <title>AgentBib — Your AI coding agents, in the notch</title>
-<meta name="description" content="AgentBib lives in your MacBook notch — answer Claude Code permission prompts AND Claude's questions, watch every session, and track cost & usage. On your Mac, iPhone, Android & Linux. One-time, lifetime.">
-<!-- Open Graph / Twitter (link previews) -->
+<meta name="description" content="AgentBib lives in your MacBook notch — approve Claude Code prompts, answer Claude's questions, review plans, and watch every session, cost & usage. On your Mac, iPhone, Android & Linux. One-time, lifetime.">
 <meta property="og:type" content="website">
 <meta property="og:site_name" content="AgentBib">
 <meta property="og:title" content="AgentBib — Your AI coding agents, in the notch">
-<meta property="og:description" content="Answer Claude Code prompts & questions from your MacBook notch — across every session. Watch status, cost & usage; approve from your phone. One-time, lifetime.">
+<meta property="og:description" content="Approve, answer & steer every Claude Code session from your MacBook notch. Watch status, cost & usage; approve from your phone. One-time, lifetime.">
 <meta property="og:url" content="https://bibhuti9.github.io/agentbib-web/">
 <meta property="og:image" content="https://bibhuti9.github.io/agentbib-web/og.png">
 <meta property="og:image:width" content="1200">
 <meta property="og:image:height" content="630">
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:title" content="AgentBib — Your AI coding agents, in the notch">
-<meta name="twitter:description" content="Answer Claude Code prompts & questions from the notch. Watch every session, cost & usage. On Mac + phone.">
+<meta name="twitter:description" content="Approve, answer & steer Claude Code from the notch. Every session, cost & usage. On Mac + phone.">
 <meta name="twitter:image" content="https://bibhuti9.github.io/agentbib-web/og.png">
 <style>
-  :root{
-    --bg:#08090a; --bg2:#0c120e; --panel:rgba(255,255,255,.045); --panel2:rgba(255,255,255,.02);
-    --edge:rgba(255,255,255,.09); --edge2:rgba(255,255,255,.14);
-    --ink:#ecefec; --muted:#93a399; --faint:#5e6b62;
-    --accent:#4fcc85; --accent-deep:#2fae5f; --claude:#d9853f; --codex:#1ab894;
-    --amber:#edb04d; --info:#5aa9f0;
-    --max:1080px;
-  }
-  *{box-sizing:border-box;margin:0}
-  html{scroll-behavior:smooth}
-  body{
-    background:
-      radial-gradient(120% 80% at 50% -10%, rgba(79,204,133,.10), transparent 55%),
-      var(--bg);
-    color:var(--ink);
-    font-family:-apple-system,system-ui,"Segoe UI",Roboto,sans-serif;
-    line-height:1.55; -webkit-font-smoothing:antialiased; overflow-x:hidden;
-  }
-  .mono{font-family:ui-monospace,"SF Mono",Menlo,monospace}
-  .tnum{font-variant-numeric:tabular-nums}
-  a{color:inherit;text-decoration:none}
-  .wrap{max-width:var(--max);margin:0 auto;padding:0 22px}
-  .accent{color:var(--accent)}
+/* ============ AgentBib — the scroll film. Dark-committed black-glass world. ============ */
+:root{
+  --void:#08090a; --void2:#0b0d0c; --panel:#0e1512; --panel2:#0a0f0d;
+  --edge:rgba(255,255,255,.08); --edge2:rgba(255,255,255,.14);
+  --ink:#eef2ee; --muted:#8fa397; --faint:#586a60;
+  --bloom:#4fcc85; --bloom-deep:#2fae5f; --bloom-lite:#8ff0b6;
+  --claude:#e08a42; --codex:#1ab894; --amber:#edb04d; --info:#5aa9f0; --danger:#f2705f;
+  --sans:-apple-system,system-ui,"SF Pro Display","Segoe UI",Roboto,sans-serif;
+  --mono:ui-monospace,"SF Mono","JetBrains Mono",Menlo,monospace;
+  --max:1120px;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth}
+body{
+  background:var(--void); color:var(--ink); font-family:var(--sans);
+  line-height:1.5; -webkit-font-smoothing:antialiased; overflow-x:hidden;
+  background-image:radial-gradient(120% 70% at 50% -8%, rgba(79,204,133,.09), transparent 60%);
+}
+a{color:inherit;text-decoration:none}
+.wrap{max-width:var(--max);margin:0 auto;padding:0 24px}
+.mono{font-family:var(--mono)}
+.eyebrow{font-family:var(--mono);font-size:12px;letter-spacing:.24em;text-transform:uppercase;color:var(--bloom);opacity:.9}
+.tnum{font-variant-numeric:tabular-nums}
+h1,h2,h3{text-wrap:balance;letter-spacing:-.03em;font-weight:800;line-height:1.02}
+:focus-visible{outline:2px solid var(--bloom);outline-offset:3px;border-radius:6px}
 
-  /* nav */
-  nav{position:sticky;top:0;z-index:50;backdrop-filter:blur(12px);
-    background:rgba(8,9,10,.66);border-bottom:1px solid var(--edge)}
-  nav .row{display:flex;align-items:center;gap:14px;height:58px}
-  .brand{display:flex;align-items:center;gap:9px;font-weight:750;font-size:16px;letter-spacing:-.01em}
-  .brand svg{width:26px;height:26px}
-  nav .links{margin-left:auto;display:flex;gap:22px;align-items:center;font-size:14px;color:var(--muted)}
-  nav .links a:hover{color:var(--ink)}
-  .btn{display:inline-flex;align-items:center;gap:8px;font-weight:650;border-radius:11px;
-    padding:10px 16px;font-size:14px;cursor:pointer;border:0;transition:transform .12s,filter .12s}
-  .btn:hover{transform:translateY(-1px)}
-  .btn.primary{background:linear-gradient(180deg,var(--accent),var(--accent-deep));color:#04160c}
-  .btn.primary:hover{filter:brightness(1.06)}
-  .btn.ghost{background:var(--panel);color:var(--ink);border:1px solid var(--edge2)}
-  @media(max-width:640px){nav .links a.nav-hide{display:none}}
+/* ---------- nav ---------- */
+nav{position:fixed;top:0;left:0;right:0;z-index:100;height:60px;
+  backdrop-filter:blur(16px) saturate(1.3);background:rgba(8,9,10,.55);border-bottom:1px solid transparent;transition:border-color .3s,background .3s}
+nav.solid{border-color:var(--edge);background:rgba(8,9,10,.8)}
+nav .row{display:flex;align-items:center;gap:16px;height:60px}
+.brand{display:flex;align-items:center;gap:9px;font-weight:750;font-size:16.5px;letter-spacing:-.01em}
+.brand svg{width:24px;height:24px}
+nav .links{margin-left:auto;display:flex;gap:26px;align-items:center;font-size:14px;color:var(--muted)}
+nav .links a:hover{color:var(--ink)}
+.btn{display:inline-flex;align-items:center;gap:8px;font-weight:650;border-radius:12px;
+  padding:12px 20px;font-size:15px;cursor:pointer;border:0;transition:transform .14s cubic-bezier(.2,.8,.2,1),filter .14s;white-space:nowrap}
+.btn:hover{transform:translateY(-2px)}
+.btn.primary{background:linear-gradient(180deg,var(--bloom-lite),var(--bloom-deep));color:#052012;box-shadow:0 8px 30px -8px rgba(79,204,133,.5)}
+.btn.primary:hover{filter:brightness(1.05)}
+.btn.ghost{background:rgba(255,255,255,.04);color:var(--ink);border:1px solid var(--edge2)}
+.btn.sm{padding:8px 15px;font-size:13.5px}
+@media(max-width:680px){nav .links .hide{display:none}}
 
-  /* hero */
-  header{padding:26px 0 70px;text-align:center;position:relative}
-  .notch-stage{display:flex;justify-content:center;margin:8px 0 40px}
-  .notch{position:relative;width:min(560px,94vw)}
-  /* the black notch tab at the very top */
-  .notch .tab{height:26px;width:200px;margin:0 auto;background:#000;
-    border-radius:0 0 16px 16px;position:relative;z-index:2}
-  /* the panel hanging from the notch */
-  .panel{background:#0a0b0d;border:1px solid rgba(255,255,255,.08);border-top:0;
-    border-radius:0 0 22px 22px;margin-top:-1px;padding:20px 20px 18px;
-    box-shadow:0 40px 90px -30px rgba(0,0,0,.8),0 0 0 1px rgba(0,0,0,.4);
-    text-align:left;overflow:hidden}
-  .panel .glow{position:absolute;inset:0;background:radial-gradient(60% 70% at 50% 0%,rgba(79,204,133,.14),transparent 60%);pointer-events:none}
-  .p-head{display:flex;align-items:center;gap:12px;position:relative}
-  .sesscard{margin-top:14px;display:flex;align-items:center;gap:11px;padding:11px 12px;
-    background:var(--panel2);border:1px solid var(--edge);border-radius:13px;position:relative}
-  .sesscard .nm{font-size:13.5px;font-weight:650}
-  .sesscard .rp{font-size:12px;color:var(--info)}
-  .sesscard .tm{margin-left:auto;font-size:12px;color:var(--faint)}
-  .ctx{margin-top:11px;position:relative}
-  .ctx .lab{display:flex;justify-content:space-between;font-size:10px;color:var(--faint);letter-spacing:.08em;font-weight:700;text-transform:uppercase}
-  .ctx .bar{height:5px;border-radius:5px;background:rgba(255,255,255,.08);margin-top:5px;overflow:hidden}
-  .ctx .bar i{display:block;height:100%;width:97%;background:linear-gradient(90deg,var(--accent),var(--amber),#f77069);border-radius:5px}
-  /* chip avatar with bloom */
-  .avchip{width:36px;height:36px;border-radius:9px;flex:none;display:grid;place-items:center;
-    background:linear-gradient(180deg,rgba(217,133,63,.3),rgba(255,255,255,.05))}
-  .kpis{display:flex;gap:8px;margin-top:14px;position:relative}
-  .kchip{flex:1;background:var(--panel2);border:1px solid var(--edge);border-radius:11px;padding:8px 10px}
-  .kchip .l{font-size:9.5px;color:var(--faint);text-transform:uppercase;letter-spacing:.05em}
-  .kchip .v{font-size:15px;font-weight:750;margin-top:2px}
+/* ---------- reveal ---------- */
+.rv{opacity:0;transform:translateY(26px);transition:opacity .8s cubic-bezier(.2,.7,.2,1),transform .8s cubic-bezier(.2,.7,.2,1)}
+.rv.in{opacity:1;transform:none}
+.rv.d1{transition-delay:.08s}.rv.d2{transition-delay:.16s}.rv.d3{transition-delay:.24s}.rv.d4{transition-delay:.32s}
 
-  .eyebrow{font-size:12.5px;font-weight:650;letter-spacing:.14em;text-transform:uppercase;color:var(--accent);margin-bottom:16px}
-  h1{font-size:clamp(34px,6.2vw,60px);line-height:1.02;letter-spacing:-.03em;font-weight:800;text-wrap:balance;margin-bottom:18px}
-  h1 em{font-style:normal;color:var(--accent)}
-  .lede{font-size:clamp(16px,2.2vw,19px);color:var(--muted);max-width:60ch;margin:0 auto 28px}
-  .cta{display:flex;gap:12px;justify-content:center;flex-wrap:wrap}
-  .cta .btn{padding:14px 24px;font-size:15.5px}
-  .trust{margin-top:20px;font-size:13px;color:var(--faint)}
-  .trust b{color:var(--muted);font-weight:600}
+/* ---------- macbook + notch (shared) ---------- */
+.mac{width:min(560px,92vw);margin:0 auto;filter:drop-shadow(0 50px 80px rgba(0,0,0,.6))}
+.screen{position:relative;background:linear-gradient(180deg,#101413,#070908);border:2px solid #1c211f;border-radius:22px 22px 4px 4px;padding:8px 8px 0;aspect-ratio:16/10.4;overflow:hidden}
+.menubar{display:flex;justify-content:space-between;font-size:10.5px;color:var(--faint);padding:2px 10px 6px;font-family:var(--mono)}
+.mbnotch{position:absolute;top:0;left:50%;transform:translateX(-50%);width:150px;height:22px;background:#000;border-radius:0 0 12px 12px;z-index:3}
+.wall{position:absolute;inset:32px 8px 0;border-radius:8px;background:
+  radial-gradient(90% 60% at 30% 0%, rgba(79,204,133,.10), transparent 60%),
+  radial-gradient(80% 60% at 90% 40%, rgba(224,138,66,.07), transparent 60%),
+  linear-gradient(160deg,#0c1210,#070a09)}
+.dock{position:absolute;bottom:8px;left:50%;transform:translateX(-50%);display:flex;gap:8px;
+  padding:6px 8px;background:rgba(255,255,255,.06);border:1px solid var(--edge);border-radius:14px;backdrop-filter:blur(8px)}
+.dock i{width:26px;height:26px;border-radius:7px;display:grid;place-items:center}
+.dock i svg{width:16px;height:16px}
+.base{height:12px;width:104%;margin:-2px -2%;background:linear-gradient(180deg,#15191800,#0000);
+  border-radius:0 0 14px 14px;position:relative}
+.base::before{content:"";position:absolute;top:0;left:50%;transform:translateX(-50%);width:120px;height:8px;background:#0c0f0e;border-radius:0 0 10px 10px}
+.base::after{content:"";position:absolute;top:0;left:-3%;width:106%;height:5px;background:linear-gradient(180deg,#23282600,#20252300);border-top:2px solid #1a1e1c}
 
-  section{padding:70px 0;border-top:1px solid var(--edge)}
-  .h2{font-size:clamp(26px,4vw,36px);letter-spacing:-.02em;font-weight:780;text-wrap:balance}
-  .sub{color:var(--muted);font-size:16px;margin-top:10px;max-width:56ch}
-  .center{text-align:center;margin:0 auto}
+/* the notch panel hanging from the top */
+.notch{position:absolute;top:0;left:50%;transform:translateX(-50%);z-index:4;width:min(360px,80%)}
+.tab{height:22px;width:150px;margin:0 auto;background:#000;border-radius:0 0 12px 12px}
+.panel{position:relative;background:#0a0d0c;border:1px solid var(--edge);border-top:0;
+  border-radius:0 0 20px 20px;margin-top:-1px;padding:14px;text-align:left;overflow:hidden;
+  box-shadow:0 40px 80px -24px rgba(0,0,0,.85)}
+.panel .halo{position:absolute;inset:0;background:radial-gradient(70% 80% at 50% -10%,rgba(79,204,133,.16),transparent 60%);pointer-events:none;opacity:1;transition:opacity .5s}
+.phead{display:flex;align-items:center;gap:10px;position:relative}
+.av{width:34px;height:34px;border-radius:9px;flex:none;display:grid;place-items:center;background:linear-gradient(180deg,rgba(224,138,66,.28),rgba(255,255,255,.04))}
+.av svg{width:22px;height:22px}
+.nm{font-size:13.5px;font-weight:750}
+.sub{font-size:11.5px;color:var(--info);font-family:var(--mono)}
 
-  .feats{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin-top:38px}
-  @media(max-width:820px){.feats{grid-template-columns:1fr 1fr}}
-  @media(max-width:520px){.feats{grid-template-columns:1fr}}
-  .feat{background:linear-gradient(180deg,var(--panel),var(--panel2));border:1px solid var(--edge);
-    border-radius:16px;padding:20px}
-  .feat .ic{width:40px;height:40px;border-radius:11px;display:grid;place-items:center;margin-bottom:14px;
-    background:rgba(79,204,133,.13);color:var(--accent)}
-  .feat .ic svg{width:20px;height:20px}
-  .feat h3{font-size:16px;font-weight:680;margin-bottom:5px;letter-spacing:-.01em}
-  .feat p{font-size:14px;color:var(--muted)}
+/* stages that swap inside the notch */
+.stage{position:relative}
+.st{position:absolute;inset:0;opacity:0;transform:translateY(8px) scale(.98);transition:opacity .45s,transform .45s;pointer-events:none}
+.st.on{opacity:1;transform:none;position:relative;pointer-events:auto}
+.line{margin-top:12px;font-size:13px;display:flex;align-items:center;gap:8px}
+.line.ok{color:var(--bloom)}
+.cmd{margin-top:6px;font-family:var(--mono);font-size:11.5px;color:#e7c9a6;background:rgba(224,138,66,.08);border:1px solid rgba(224,138,66,.2);padding:8px 10px;border-radius:9px}
+.card{margin-top:12px;background:rgba(255,255,255,.03);border:1px solid var(--edge);border-radius:12px;padding:11px}
+.card.amberish{background:rgba(237,176,77,.07);border-color:rgba(237,176,77,.28)}
+.card.planish{background:rgba(158,124,240,.08);border-color:rgba(158,124,240,.3)}
+.ctop{font-size:12.5px;font-weight:700;display:flex;align-items:center;gap:6px}
+.risky{margin-left:auto;font-family:var(--mono);font-size:9px;letter-spacing:.1em;color:var(--danger);border:1px solid rgba(242,112,95,.4);padding:1px 6px;border-radius:20px}
+.btns{display:flex;gap:7px;margin-top:11px}
+.b{flex:1;text-align:center;font-size:12px;font-weight:650;padding:7px;border-radius:9px;border:1px solid var(--edge2)}
+.b.deny{color:var(--muted)}
+.b.allow{background:linear-gradient(180deg,var(--bloom-lite),var(--bloom-deep));color:#052012;border:0;position:relative}
+.b.allow.tap{animation:tap 2.4s ease-in-out infinite}
+@keyframes tap{0%,72%,100%{box-shadow:0 0 0 0 rgba(79,204,133,0)}80%{box-shadow:0 0 0 5px rgba(79,204,133,.35)}88%{box-shadow:0 0 0 0 rgba(79,204,133,0);filter:brightness(1.15)}}
+.q{font-size:12.5px;margin:9px 0 8px}
+.opt{display:flex;align-items:center;gap:9px;padding:7px 9px;border-radius:9px;background:rgba(255,255,255,.03);font-size:12px;margin-top:5px;border:1px solid transparent}
+.opt .k{font-family:var(--mono);font-weight:700;font-size:11px;width:19px;height:19px;display:grid;place-items:center;border-radius:6px;background:rgba(237,176,77,.16);color:var(--amber)}
+.opt.sel{border-color:rgba(237,176,77,.45);background:rgba(237,176,77,.08)}
+.planbody{font-size:11.5px;color:var(--muted);line-height:1.5;margin:8px 0}
+.planbody b{color:var(--ink)} .planbody .h{color:#c9b6f5;font-weight:700}
+.feed{margin-top:9px;display:flex;gap:7px;align-items:center}
+.feed .fi{flex:1;font-family:var(--mono);font-size:11px;color:var(--ink);background:rgba(255,255,255,.05);border:1px solid var(--amber);border-radius:9px;padding:7px 9px}
+.feed .send{width:26px;height:26px;border-radius:50%;background:var(--amber);color:#1a1408;display:grid;place-items:center;font-weight:800}
+.done{text-align:center;padding:10px 0 4px}
+.done svg{width:40px;height:40px;color:var(--bloom)}
+.rays{position:absolute;top:34px;left:50%;transform:translateX(-50%);width:120px;height:120px;pointer-events:none}
+.diff{margin-top:8px;font-family:var(--mono);font-size:11px}
+.diff .add{color:var(--bloom)}.diff .del{color:var(--danger)}
 
-  .steps{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin-top:38px;counter-reset:s}
-  @media(max-width:720px){.steps{grid-template-columns:1fr}}
-  .step{background:var(--panel2);border:1px solid var(--edge);border-radius:16px;padding:22px;position:relative}
-  .step .n{font-size:13px;font-weight:800;color:var(--accent);letter-spacing:.1em}
-  .step h3{font-size:17px;font-weight:680;margin:8px 0 6px}
-  .step p{font-size:14px;color:var(--muted)}
+/* typing dots */
+.typing{display:inline-flex;gap:3px;margin-left:4px}
+.typing i{width:4px;height:4px;border-radius:50%;background:var(--claude);animation:blink 1.2s infinite}
+.typing i:nth-child(2){animation-delay:.2s}.typing i:nth-child(3){animation-delay:.4s}
+@keyframes blink{0%,60%,100%{opacity:.25}30%{opacity:1}}
 
-  .prices{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin-top:38px;align-items:stretch}
-  @media(max-width:820px){.prices{grid-template-columns:1fr;max-width:420px;margin-left:auto;margin-right:auto}}
-  .price{background:linear-gradient(180deg,var(--panel),var(--panel2));border:1px solid var(--edge);
-    border-radius:18px;padding:24px;display:flex;flex-direction:column}
-  .price.pop{border-color:rgba(79,204,133,.5);box-shadow:0 0 0 1px rgba(79,204,133,.25),0 24px 60px -30px rgba(79,204,133,.4)}
-  .price .tag{align-self:flex-start;font-size:11px;font-weight:800;letter-spacing:.05em;color:var(--accent);
-    background:rgba(79,204,133,.14);padding:3px 9px;border-radius:20px;margin-bottom:12px;text-transform:uppercase}
-  .price .name{font-size:18px;font-weight:720}
-  .price .macs{font-size:13px;color:var(--muted);margin-top:2px}
-  .price .amt{font-size:38px;font-weight:820;letter-spacing:-.03em;margin:16px 0 2px}
-  .price .amt small{font-size:14px;font-weight:600;color:var(--muted);letter-spacing:0}
-  .price ul{list-style:none;margin:16px 0 20px;padding:0;display:flex;flex-direction:column;gap:9px}
-  .price li{font-size:13.5px;color:var(--muted);display:flex;gap:9px;align-items:flex-start}
-  .price li svg{width:15px;height:15px;color:var(--accent);flex:none;margin-top:2px}
-  .price .btn{margin-top:auto;justify-content:center}
+/* ---------- hero ---------- */
+header{position:relative;padding:120px 0 40px;text-align:center;overflow:hidden}
+.hero-h{font-size:clamp(40px,7.4vw,78px);margin:0 auto 20px;max-width:16ch}
+.hero-h em{font-style:normal;color:var(--bloom)}
+.lede{font-size:clamp(17px,2.3vw,21px);color:var(--muted);max-width:52ch;margin:0 auto 30px}
+.cta{display:flex;gap:14px;justify-content:center;flex-wrap:wrap;margin-bottom:12px}
+.microtrust{font-size:13px;color:var(--faint);font-family:var(--mono)}
+.microtrust b{color:var(--muted);font-weight:500}
+.hero-stage{margin-top:56px;perspective:1400px}
+.hero-stage .mac{transform:rotateX(6deg);transform-style:preserve-3d}
+.word{display:inline-block;opacity:0;transform:translateY(20px) rotateX(-40deg);transform-origin:bottom;
+  animation:word .7s cubic-bezier(.2,.8,.2,1) forwards}
+@keyframes word{to{opacity:1;transform:none}}
+.bloom-breathe{animation:breathe 4s ease-in-out infinite}
+@keyframes breathe{0%,100%{filter:drop-shadow(0 0 4px rgba(79,204,133,.4))}50%{filter:drop-shadow(0 0 14px rgba(79,204,133,.8))}}
 
-  .faq{max-width:760px;margin:38px auto 0;display:flex;flex-direction:column;gap:0}
-  details{border-bottom:1px solid var(--edge);padding:18px 4px}
-  summary{font-size:16px;font-weight:620;cursor:pointer;list-style:none;display:flex;justify-content:space-between;gap:16px}
-  summary::-webkit-details-marker{display:none}
-  summary::after{content:"+";color:var(--accent);font-weight:700;font-size:20px;line-height:1}
-  details[open] summary::after{content:"–"}
-  details p{color:var(--muted);font-size:14.5px;margin-top:10px;max-width:64ch}
+/* ---------- section frame ---------- */
+section{position:relative;padding:100px 0}
+.sec-head{max-width:60ch}
+.h2{font-size:clamp(28px,4.6vw,48px);margin:14px 0 12px}
+.h2 .accent{color:var(--bloom)}
+.dek{font-size:17px;color:var(--muted);max-width:54ch;line-height:1.6}
 
-  .final{text-align:center;background:
-    radial-gradient(80% 120% at 50% 0%,rgba(79,204,133,.12),transparent 60%);border-radius:24px;
-    border:1px solid var(--edge);padding:56px 24px;margin-top:14px}
+/* ---------- pinned performance ---------- */
+#perform{padding:0}
+.pin-track{height:560vh;position:relative}
+.pin{position:sticky;top:0;height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:26px;overflow:hidden}
+.pin .glowfield{position:absolute;inset:0;background:radial-gradient(50% 40% at 50% 42%,rgba(79,204,133,.12),transparent 70%);pointer-events:none;transition:background .6s}
+.pcap{text-align:center;max-width:30ch;min-height:96px}
+.pcap .ptitle{font-size:clamp(22px,3.4vw,34px);font-weight:800;letter-spacing:-.02em;transition:opacity .35s,transform .35s;line-height:1.1}
+.pcap .psub{margin-top:10px;color:var(--muted);font-size:15.5px;transition:opacity .35s .05s,transform .35s .05s}
+.pcap.swap .ptitle,.pcap.swap .psub{opacity:0;transform:translateY(10px)}
+.pin .mac{width:min(420px,74vw)}
+.pdots{display:flex;gap:9px}
+.pdots span{width:7px;height:7px;border-radius:50%;background:rgba(255,255,255,.16);transition:background .3s,transform .3s}
+.pdots span.on{background:var(--bloom);transform:scale(1.35)}
+.scrollhint{position:absolute;bottom:26px;left:50%;transform:translateX(-50%);font-family:var(--mono);font-size:11px;letter-spacing:.2em;color:var(--faint);text-transform:uppercase;animation:hintfade 2.5s ease-in-out infinite}
+@keyframes hintfade{0%,100%{opacity:.3}50%{opacity:.9}}
 
-  footer{border-top:1px solid var(--edge);padding:40px 0 60px;color:var(--faint);font-size:13.5px}
-  footer .row{display:flex;flex-wrap:wrap;gap:16px 28px;align-items:center}
-  footer a:hover{color:var(--ink)}
-  footer .legal{margin-left:auto;display:flex;gap:20px}
-  .disc{margin-top:16px;font-size:12px;color:var(--faint);max-width:70ch}
+/* ---------- feature close-ups (alternating) ---------- */
+.closeup{display:grid;grid-template-columns:1fr 1fr;gap:56px;align-items:center}
+.closeup.rev{direction:rtl}.closeup.rev>*{direction:ltr}
+@media(max-width:860px){.closeup{grid-template-columns:1fr;gap:34px}.closeup.rev{direction:ltr}}
+.showpanel{background:linear-gradient(180deg,var(--panel),var(--panel2));border:1px solid var(--edge);border-radius:20px;padding:16px;position:relative;overflow:hidden}
+.showpanel::before{content:"";position:absolute;inset:0;background:radial-gradient(60% 50% at 20% 0%,rgba(79,204,133,.08),transparent 60%);pointer-events:none}
 
-  @media(prefers-reduced-motion:no-preference){
-    .bloom-spin{animation:spin 14s linear infinite;transform-origin:20px 20px}
-    .reveal{opacity:0;transform:translateY(14px);animation:rise .7s cubic-bezier(.2,.7,.3,1) forwards}
-  }
-  @keyframes spin{to{transform:rotate(360deg)}}
-  @keyframes rise{to{opacity:1;transform:none}}
-  :focus-visible{outline:2px solid var(--accent);outline-offset:2px;border-radius:6px}
+/* session browser cards */
+.sess{display:flex;align-items:center;gap:11px;padding:11px 12px;border-radius:13px;background:rgba(255,255,255,.025);border:1px solid var(--edge);margin-bottom:9px;position:relative}
+.sess .sa{width:34px;height:34px;border-radius:9px;flex:none;display:grid;place-items:center}
+.sess .sa svg{width:21px;height:21px}
+.sess .snm{font-size:13.5px;font-weight:700}
+.sess .smeta{font-size:11px;color:var(--faint);font-family:var(--mono);margin-top:2px}
+.sess .st-pill{margin-left:auto;font-size:10.5px;font-family:var(--mono);padding:3px 9px;border-radius:20px;white-space:nowrap}
+.st-work{color:var(--info);background:rgba(90,169,240,.12)}
+.st-wait{color:var(--amber);background:rgba(237,176,77,.14)}
+.st-done{color:var(--bloom);background:rgba(79,204,133,.14)}
+.jump{font-size:10px;font-family:var(--mono);color:var(--bloom);opacity:0;transition:opacity .2s}
+.sess:hover .jump{opacity:1}
+
+/* meters */
+.rings{display:flex;gap:26px;justify-content:center;flex-wrap:wrap;margin:6px 0}
+.ring{text-align:center}
+.ring svg{width:96px;height:96px;transform:rotate(-90deg)}
+.ring .rc{stroke:rgba(255,255,255,.08)} .ring .rf{stroke-linecap:round;transition:stroke-dashoffset 1.4s cubic-bezier(.2,.8,.2,1)}
+.ring .lab{font-family:var(--mono);font-size:11px;color:var(--faint);letter-spacing:.1em;margin-top:6px}
+.ring .val{font-size:22px;font-weight:800;margin-top:-64px;position:relative}
+.costbig{font-size:clamp(40px,6vw,64px);font-weight:850;letter-spacing:-.03em}
+.costbig .c{color:var(--bloom)}
+
+/* devices row */
+.devrow{display:flex;align-items:flex-end;justify-content:center;gap:22px;flex-wrap:wrap;margin-top:8px}
+.phone{width:150px;background:#0a0d0c;border:2px solid #1c211f;border-radius:26px;padding:9px 8px 12px;position:relative;box-shadow:0 30px 50px -20px rgba(0,0,0,.7)}
+.phone .pnotch{width:44px;height:12px;background:#000;border-radius:0 0 8px 8px;margin:0 auto 8px}
+.phone .pcard{background:rgba(237,176,77,.08);border:1px solid rgba(237,176,77,.3);border-radius:12px;padding:9px;font-size:10.5px}
+.phone .pbtns{display:flex;gap:5px;margin-top:8px}
+.phone .pb{flex:1;text-align:center;font-size:9.5px;font-weight:700;padding:6px;border-radius:7px}
+.phone .pb.a{background:var(--bloom-deep);color:#042}
+.phone .pb.d{border:1px solid var(--edge2);color:var(--muted)}
+.oslabel{text-align:center;font-family:var(--mono);font-size:11px;color:var(--faint);margin-top:9px;letter-spacing:.08em}
+
+/* settings cockpit */
+.cockpit{border:1px solid var(--edge);border-radius:18px;overflow:hidden;background:var(--panel2);display:grid;grid-template-columns:180px 1fr;min-height:340px}
+@media(max-width:620px){.cockpit{grid-template-columns:1fr}.cockpit .cprev{display:none}}
+.csidebar{background:rgba(255,255,255,.02);border-right:1px solid var(--edge);padding:14px 10px}
+.ctab{display:flex;align-items:center;gap:9px;padding:9px 11px;border-radius:10px;font-size:13px;color:var(--muted);cursor:pointer;transition:.15s}
+.ctab .ci{width:16px;height:16px;opacity:.7}
+.ctab.on{background:rgba(79,204,133,.12);color:var(--ink)}
+.ctab:hover{color:var(--ink)}
+.cgrp{font-family:var(--mono);font-size:10px;letter-spacing:.12em;color:var(--faint);text-transform:uppercase;padding:12px 11px 5px}
+.cprev{padding:20px}
+.setrow{display:flex;align-items:center;gap:12px;padding:13px 4px;border-bottom:1px solid var(--edge)}
+.setrow:last-child{border:0}
+.setrow .si{width:30px;height:30px;border-radius:8px;background:rgba(79,204,133,.12);color:var(--bloom);display:grid;place-items:center;flex:none}
+.setrow .stt{font-size:13.5px;font-weight:650}
+.setrow .sds{font-size:11.5px;color:var(--faint)}
+.toggle{margin-left:auto;width:38px;height:22px;border-radius:20px;background:var(--bloom-deep);position:relative;flex:none}
+.toggle.off{background:rgba(255,255,255,.12)}
+.toggle::after{content:"";position:absolute;top:2px;right:2px;width:18px;height:18px;border-radius:50%;background:#fff;transition:.2s}
+.toggle.off::after{right:18px}
+
+/* compare */
+.cmp{width:100%;border-collapse:collapse;font-size:14.5px}
+.cmp th,.cmp td{padding:14px 16px;text-align:left;border-bottom:1px solid var(--edge)}
+.cmp th{font-family:var(--mono);font-size:12px;letter-spacing:.06em;color:var(--faint);text-transform:uppercase;font-weight:600}
+.cmp .us{color:var(--bloom);font-weight:700}
+.cmp .them{color:var(--muted)}
+.cmp td:first-child{color:var(--ink);font-weight:600}
+.cmp .yes{color:var(--bloom)} .cmp .no{color:var(--faint)}
+.cmp tr:hover td{background:rgba(255,255,255,.015)}
+.cmp thead th:nth-child(2){color:var(--bloom)}
+
+/* pricing */
+.prices{display:grid;grid-template-columns:repeat(3,1fr);gap:18px;margin-top:40px}
+@media(max-width:820px){.prices{grid-template-columns:1fr;max-width:420px;margin-inline:auto}}
+.price{background:linear-gradient(180deg,var(--panel),var(--panel2));border:1px solid var(--edge);border-radius:20px;padding:26px;display:flex;flex-direction:column}
+.price.pop{border-color:rgba(79,204,133,.5);box-shadow:0 0 0 1px rgba(79,204,133,.22),0 30px 60px -30px rgba(79,204,133,.4)}
+.price .tag{align-self:flex-start;font-family:var(--mono);font-size:10.5px;letter-spacing:.08em;color:var(--bloom);background:rgba(79,204,133,.13);padding:4px 10px;border-radius:20px;margin-bottom:14px;text-transform:uppercase}
+.price .pn{font-size:19px;font-weight:750}
+.price .macs{font-size:13px;color:var(--muted);margin-top:2px}
+.price .amt{font-size:42px;font-weight:850;letter-spacing:-.03em;margin:16px 0 2px}
+.price .amt small{font-size:14px;font-weight:600;color:var(--muted)}
+.price ul{list-style:none;margin:18px 0 22px;display:flex;flex-direction:column;gap:10px}
+.price li{font-size:13.5px;color:var(--muted);display:flex;gap:9px}
+.price li::before{content:"✦";color:var(--bloom)}
+
+/* download + footer */
+#download{text-align:center;background:radial-gradient(70% 100% at 50% 100%,rgba(79,204,133,.10),transparent 65%)}
+footer{border-top:1px solid var(--edge);padding:40px 0 60px;color:var(--faint);font-size:13px}
+footer .frow{display:flex;flex-wrap:wrap;gap:16px 26px;align-items:center}
+footer .legal{margin-left:auto;display:flex;gap:20px}
+footer a:hover{color:var(--muted)}
+.disc{margin-top:18px;font-size:11.5px;color:#3f4a44;max-width:70ch}
+
+@media(prefers-reduced-motion:reduce){
+  *{animation:none!important;transition:none!important}
+  .rv{opacity:1;transform:none}
+  .word{opacity:1;transform:none}
+}
 </style>
 </head>
 <body>
-
-<!-- reusable bloom (defined once, referenced) -->
+<!-- reusable bloom mascot -->
 <svg width="0" height="0" style="position:absolute" aria-hidden="true"><defs>
   <g id="bloom">
-    <g class="bloom-spin">
-      <g fill="currentColor">
-        <ellipse cx="20" cy="9" rx="3.1" ry="6.2"/>
-        <ellipse cx="20" cy="9" rx="3.1" ry="6.2" transform="rotate(45 20 20)"/>
-        <ellipse cx="20" cy="9" rx="3.1" ry="6.2" transform="rotate(90 20 20)"/>
-        <ellipse cx="20" cy="9" rx="3.1" ry="6.2" transform="rotate(135 20 20)"/>
-        <ellipse cx="20" cy="9" rx="3.1" ry="6.2" transform="rotate(180 20 20)"/>
-        <ellipse cx="20" cy="9" rx="3.1" ry="6.2" transform="rotate(225 20 20)"/>
-        <ellipse cx="20" cy="9" rx="3.1" ry="6.2" transform="rotate(270 20 20)"/>
-        <ellipse cx="20" cy="9" rx="3.1" ry="6.2" transform="rotate(315 20 20)"/>
-      </g>
+    <g fill="currentColor">
+      <ellipse cx="20" cy="9" rx="3.1" ry="6.2"/>
+      <ellipse cx="20" cy="9" rx="3.1" ry="6.2" transform="rotate(45 20 20)"/>
+      <ellipse cx="20" cy="9" rx="3.1" ry="6.2" transform="rotate(90 20 20)"/>
+      <ellipse cx="20" cy="9" rx="3.1" ry="6.2" transform="rotate(135 20 20)"/>
+      <ellipse cx="20" cy="9" rx="3.1" ry="6.2" transform="rotate(180 20 20)"/>
+      <ellipse cx="20" cy="9" rx="3.1" ry="6.2" transform="rotate(225 20 20)"/>
+      <ellipse cx="20" cy="9" rx="3.1" ry="6.2" transform="rotate(270 20 20)"/>
+      <ellipse cx="20" cy="9" rx="3.1" ry="6.2" transform="rotate(315 20 20)"/>
     </g>
     <circle cx="20" cy="20" r="5.2" fill="#eafff2"/>
     <circle cx="20" cy="20" r="2.2" fill="#fff"/>
   </g>
 </defs></svg>
 
-<nav><div class="wrap row">
-  <a class="brand" href="#top"><svg viewBox="0 0 40 40" style="color:var(--accent)"><use href="#bloom"/></svg>AgentBib</a>
+<nav id="nav"><div class="wrap row">
+  <a class="brand" href="#top"><svg viewBox="0 0 40 40" style="color:var(--bloom)"><use href="#bloom"/></svg>AgentBib</a>
   <div class="links">
-    <a href="#features" class="nav-hide">Features</a>
-    <a href="#how" class="nav-hide">How it works</a>
+    <a href="#perform" class="hide">The notch</a>
+    <a href="#everywhere" class="hide">Everywhere</a>
+    <a href="#settings" class="hide">Settings</a>
     <a href="#pricing">Pricing</a>
-    <a href="#download" class="btn primary" style="padding:8px 14px">Download</a>
+    <a href="#download" class="btn primary sm" data-dl>Download</a>
   </div>
 </div></nav>
 
-<header id="top"><div class="wrap">
-  <div class="notch-stage">
-    <div class="notch reveal">
-      <div class="tab"></div>
-      <div class="panel">
-        <div class="glow"></div>
-        <div class="p-head">
-          <div class="avchip"><svg viewBox="0 0 40 40" width="26" height="26" style="color:var(--claude)"><use href="#bloom"/></svg></div>
-          <div>
-            <div style="font-weight:750;font-size:15px">Opus 4.8 <span style="color:var(--accent);font-weight:600;font-size:12px">· working…</span></div>
-            <div style="font-size:12px;color:var(--info)">⌥ apps/frontend · main</div>
+<!-- ============ HERO ============ -->
+<header id="top">
+  <div class="wrap">
+    <div class="eyebrow rv in" style="margin-bottom:22px">macOS · Claude Code &amp; Codex · one-time, lifetime</div>
+    <h1 class="hero-h" id="heroH"></h1>
+    <p class="lede rv">Every AI coding agent you run — <b style="color:var(--ink)">approved, answered, and steered</b> from the little black notch at the top of your Mac. Never hunt a terminal tab again.</p>
+    <div class="cta rv d1">
+      <a class="btn primary" data-dl>Download for Mac — free trial</a>
+      <a class="btn ghost" href="#perform">Watch the notch work ↓</a>
+    </div>
+    <div class="microtrust rv d2"><b>7-day trial</b> · no card · <b>one-time</b> price, updates forever · your code never leaves your Mac</div>
+  </div>
+  <div class="hero-stage rv d2">
+    <div class="mac">
+      <div class="screen">
+        <div class="mbnotch"></div>
+        <div class="menubar"><span>AgentBib &nbsp; File &nbsp; Edit &nbsp; View</span><span><svg viewBox="0 0 40 40" width="10" height="10" style="color:var(--bloom)"><use href="#bloom"/></svg> 5H 31% &nbsp; 9:41</span></div>
+        <div class="wall"></div>
+        <div class="notch">
+          <div class="panel">
+            <div class="halo"></div>
+            <div class="phead">
+              <div class="av"><svg viewBox="0 0 40 40" class="bloom-breathe" style="color:var(--claude)"><use href="#bloom"/></svg></div>
+              <div><div class="nm">Opus 4.8 <span style="color:var(--info);font-weight:500;font-size:12px">· working</span></div><div class="sub">apps/frontend · main</div></div>
+            </div>
+            <div class="line">✎ Editing <b>&nbsp;Hero.tsx</b><span class="typing"><i></i><i></i><i></i></span></div>
           </div>
-          <div style="margin-left:auto;font-size:12px;color:var(--faint)">2m</div>
         </div>
-        <div class="ctx">
-          <div class="lab"><span>Context</span><span>194.5k / 200k · 97%</span></div>
-          <div class="bar"><i></i></div>
+        <div class="dock">
+          <i style="background:linear-gradient(160deg,#4aa3ff,#2b6fe0)"></i>
+          <i style="background:linear-gradient(160deg,#2b2b2d,#111)"></i>
+          <i style="background:linear-gradient(160deg,#173225,#0c1c13)"><svg viewBox="0 0 40 40" style="color:var(--bloom)"><use href="#bloom"/></svg></i>
+          <i style="background:linear-gradient(160deg,#ff8a5b,#e0521f)"></i>
+          <i style="background:linear-gradient(160deg,#a06bff,#6f34d8)"></i>
         </div>
-        <div class="sesscard">
-          <div class="avchip" style="background:linear-gradient(180deg,rgba(26,184,148,.3),rgba(255,255,255,.05));width:30px;height:30px">
-            <svg viewBox="0 0 40 40" width="22" height="22" style="color:var(--codex)"><use href="#bloom"/></svg>
+      </div>
+      <div class="base"></div>
+    </div>
+  </div>
+</header>
+
+<!-- ============ THE NOTCH PERFORMS (pinned scroll-scrub) ============ -->
+<section id="perform">
+  <div class="pin-track" id="pinTrack">
+    <div class="pin">
+      <div class="glowfield" id="glowfield"></div>
+      <div class="pcap" id="pcap">
+        <div class="ptitle" id="ptitle">It lives in your notch.</div>
+        <div class="psub" id="psub">Your agent works away up top. You stay in your editor — glancing, never switching.</div>
+      </div>
+      <div class="mac">
+        <div class="screen">
+          <div class="mbnotch"></div>
+          <div class="menubar"><span>AgentBib</span><span><svg viewBox="0 0 40 40" width="10" height="10" style="color:var(--bloom)"><use href="#bloom"/></svg> 5H 31% &nbsp; 9:41</span></div>
+          <div class="wall"></div>
+          <div class="notch">
+            <div class="panel">
+              <div class="halo" id="halo"></div>
+              <div class="phead">
+                <div class="av"><svg viewBox="0 0 40 40" style="color:var(--claude)"><use href="#bloom"/></svg></div>
+                <div><div class="nm">Opus 4.8 <span id="pstatus" style="color:var(--info);font-weight:500;font-size:12px">· working</span></div><div class="sub">apps/frontend · main</div></div>
+              </div>
+              <div class="stage" id="stageWrap">
+                <!-- 0 work -->
+                <div class="st on" data-s="0"><div class="line">✎ Editing <b>&nbsp;Hero.tsx</b><span class="typing"><i></i><i></i><i></i></span></div></div>
+                <!-- 1 permission -->
+                <div class="st" data-s="1">
+                  <div class="card amberish"><div class="ctop">⚠️ Run command <span class="risky">RISKY</span></div>
+                    <div class="cmd">rm -rf ./dist &amp;&amp; npm run build</div>
+                    <div class="btns"><span class="b deny">Deny</span><span class="b allow">Always</span><span class="b allow tap">Allow ⌘Y</span></div></div>
+                </div>
+                <!-- 2 plan -->
+                <div class="st" data-s="2">
+                  <div class="card planish"><div class="ctop" style="color:#c9b6f5">◔ Plan — review</div>
+                    <div class="planbody"><span class="h">Add dark mode</span><br>• new <b>theme</b> token in settings<br>• wire the <b>Appearance</b> toggle<br>• persist to <b>settings.json</b></div>
+                    <div class="btns"><span class="b deny">Request changes</span><span class="b allow tap">Approve</span></div></div>
+                </div>
+                <!-- 3 question -->
+                <div class="st" data-s="3">
+                  <div class="card amberish"><div class="ctop">💬 Claude needs your input</div>
+                    <div class="q">Which layout for the dashboard?</div>
+                    <div class="opt sel"><span class="k">1</span> Grid — recommended</div>
+                    <div class="opt"><span class="k">2</span> List</div>
+                    <div class="opt"><span class="k">3</span> Let's discuss</div></div>
+                </div>
+                <!-- 4 steer -->
+                <div class="st" data-s="4">
+                  <div class="card amberish"><div class="ctop">✎ Steer it your way</div>
+                    <div class="q" style="color:var(--muted)">Not quite right? Send it back with a note.</div>
+                    <div class="feed"><span class="fi">use CSS grid, not flexbox…</span><span class="send">↑</span></div></div>
+                </div>
+                <!-- 5 done -->
+                <div class="st" data-s="5">
+                  <div class="done">
+                    <svg viewBox="0 0 40 40" class="bloom-breathe"><use href="#bloom"/></svg>
+                    <div class="line ok" style="justify-content:center;margin-top:8px">Done ✓ &nbsp;<span style="color:var(--faint)">Opus 4.8 · apps/frontend</span></div>
+                    <div class="diff" style="text-align:center"><span class="add">+128</span> &nbsp;<span class="del">−34</span> &nbsp;<span style="color:var(--faint)">6 files</span></div>
+                  </div>
+                </div>
+              </div>
+            </div>
           </div>
-          <div><div class="nm">Codex</div><div class="rp">⌥ workspace/api</div></div>
-          <div class="tm">idle · 10m</div>
+          <div class="dock">
+            <i style="background:linear-gradient(160deg,#4aa3ff,#2b6fe0)"></i>
+            <i style="background:linear-gradient(160deg,#2b2b2d,#111)"></i>
+            <i style="background:linear-gradient(160deg,#173225,#0c1c13)"><svg viewBox="0 0 40 40" style="color:var(--bloom)"><use href="#bloom"/></svg></i>
+            <i style="background:linear-gradient(160deg,#ff8a5b,#e0521f)"></i>
+            <i style="background:linear-gradient(160deg,#a06bff,#6f34d8)"></i>
+          </div>
         </div>
-        <div class="kpis">
-          <div class="kchip"><div class="l">5-hour</div><div class="v accent tnum">29%</div></div>
-          <div class="kchip"><div class="l">7-day</div><div class="v tnum">12%</div></div>
-          <div class="kchip"><div class="l">💵 Today</div><div class="v tnum">$6.40</div></div>
+        <div class="base"></div>
+      </div>
+      <div class="pdots" id="pdots"><span class="on"></span><span></span><span></span><span></span><span></span><span></span></div>
+      <div class="scrollhint">keep scrolling</div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ SESSION BROWSER ============ -->
+<section id="sessions">
+  <div class="wrap">
+    <div class="closeup">
+      <div class="rv">
+        <div class="eyebrow">Every agent, one glance</div>
+        <div class="h2">Ten sessions?<br><span class="accent">Still one place to look.</span></div>
+        <p class="dek">Run Claude Code, Codex, and more across a dozen repos. The notch shows every one — model, branch, what it's touching, tokens burned, lines changed, its last reply. See who's <b style="color:var(--info)">working</b>, who's <b style="color:var(--amber)">waiting on you</b>, who's <b style="color:var(--bloom)">done</b>. Click any card and its terminal jumps to the front.</p>
+      </div>
+      <div class="showpanel rv d1">
+        <div class="sess"><div class="sa" style="background:linear-gradient(180deg,rgba(224,138,66,.3),rgba(255,255,255,.04))"><svg viewBox="0 0 40 40" style="color:var(--claude)"><use href="#bloom"/></svg></div>
+          <div><div class="snm">Opus 4.8</div><div class="smeta">apps/frontend · 128↑ 34↓ · 42k tok</div></div>
+          <span class="st-pill st-work">working</span></div>
+        <div class="sess"><div class="sa" style="background:linear-gradient(180deg,rgba(26,184,148,.28),rgba(255,255,255,.04))"><svg viewBox="0 0 40 40" style="color:var(--codex)"><use href="#bloom"/></svg></div>
+          <div><div class="snm">Codex</div><div class="smeta">api/payments · waiting for approval</div></div>
+          <span class="st-pill st-wait">waiting</span></div>
+        <div class="sess"><div class="sa" style="background:linear-gradient(180deg,rgba(90,169,240,.24),rgba(255,255,255,.04))"><svg viewBox="0 0 40 40" style="color:var(--info)"><use href="#bloom"/></svg></div>
+          <div><div class="snm">Sonnet 5 <span class="jump">Open ↗</span></div><div class="smeta">infra/deploy · 9 files · main</div></div>
+          <span class="st-pill st-work">working</span></div>
+        <div class="sess"><div class="sa" style="background:linear-gradient(180deg,rgba(79,204,133,.26),rgba(255,255,255,.04))"><svg viewBox="0 0 40 40" style="color:var(--bloom)"><use href="#bloom"/></svg></div>
+          <div><div class="snm">Opus 4.8</div><div class="smeta">docs/site · "Shipped the landing page ✓"</div></div>
+          <span class="st-pill st-done">done ✓</span></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ USAGE + COST ============ -->
+<section id="meters" style="background:linear-gradient(180deg,transparent,rgba(79,204,133,.03),transparent)">
+  <div class="wrap">
+    <div class="closeup rev">
+      <div class="rv">
+        <div class="eyebrow">Know your burn</div>
+        <div class="h2">Your limits and spend,<br><span class="accent">always in the corner of your eye.</span></div>
+        <p class="dek">Live 5-hour and weekly usage rings, pulled straight from your Claude account — no extra API calls. Plus what today actually <b style="color:var(--bloom)">cost</b> you, per repo, ticking up in real time. Hit a budget you set and the notch taps you on the shoulder.</p>
+      </div>
+      <div class="showpanel rv d1" style="text-align:center">
+        <div class="rings" id="rings">
+          <div class="ring">
+            <svg viewBox="0 0 100 100"><circle class="rc" cx="50" cy="50" r="42" fill="none" stroke-width="8"/><circle class="rf" cx="50" cy="50" r="42" fill="none" stroke="var(--bloom)" stroke-width="8" stroke-dasharray="264" stroke-dashoffset="264" data-pct="31"/></svg>
+            <div class="val tnum">31%</div><div class="lab">5-HOUR</div>
+          </div>
+          <div class="ring">
+            <svg viewBox="0 0 100 100"><circle class="rc" cx="50" cy="50" r="42" fill="none" stroke-width="8"/><circle class="rf" cx="50" cy="50" r="42" fill="none" stroke="var(--amber)" stroke-width="8" stroke-dasharray="264" stroke-dashoffset="264" data-pct="68"/></svg>
+            <div class="val tnum">68%</div><div class="lab">7-DAY</div>
+          </div>
+        </div>
+        <div style="margin-top:18px;border-top:1px solid var(--edge);padding-top:16px">
+          <div style="font-family:var(--mono);font-size:11px;color:var(--faint);letter-spacing:.1em">SPENT TODAY</div>
+          <div class="costbig tnum">$<span class="c" id="costc">0.00</span></div>
+          <div style="font-size:12.5px;color:var(--muted)">across 4 repos · Opus 4.8, Codex, Sonnet 5</div>
         </div>
       </div>
     </div>
   </div>
+</section>
 
-  <p class="eyebrow">macOS · Claude Code · Codex &amp; more</p>
-  <h1>Your AI coding agents,<br><em>living in your notch.</em></h1>
-  <p class="lede center">AgentBib turns the MacBook notch into mission control — answer permission prompts <em>and Claude's questions</em>, watch every session's status, cost &amp; git, and see your usage at a glance. On your Mac, iPhone, Android &amp; Linux.</p>
-  <div class="cta">
-    <a href="#download" class="btn primary">Download for macOS ↓</a>
-    <a href="#pricing" class="btn ghost">See pricing</a>
+<!-- ============ EVERYWHERE ============ -->
+<section id="everywhere">
+  <div class="wrap center" style="text-align:center;max-width:60ch;margin-inline:auto">
+    <div class="eyebrow rv in">The part they can't copy</div>
+    <div class="h2 rv">Not just your Mac.<br><span class="accent">Everywhere you are.</span></div>
+    <p class="dek rv d1" style="margin-inline:auto">Step away from the desk and a prompt still finds you. Approve from your <b style="color:var(--ink)">iPhone</b> or <b style="color:var(--ink)">Android</b>, watch sessions and usage from your pocket, and run the same notch on <b style="color:var(--ink)">Linux</b>. Your agents don't wait for you to sit back down.</p>
   </div>
-  <p class="trust"><b>Free 7-day trial</b> · no API key needed · one-time payment, yours forever</p>
-</div></header>
+  <div class="wrap devrow rv d2" style="margin-top:44px">
+    <div style="text-align:center">
+      <div class="phone"><div class="pnotch"></div>
+        <div class="pcard"><b>⚠️ Run command</b><div class="mono" style="font-size:9px;color:#e7c9a6;margin-top:5px">git push origin main</div>
+          <div class="pbtns"><span class="pb d">Deny</span><span class="pb a">Allow</span></div></div>
+      </div>
+      <div class="oslabel">iPHONE · ANDROID</div>
+    </div>
+    <div style="text-align:center">
+      <div class="mac" style="width:280px">
+        <div class="screen"><div class="mbnotch"></div>
+          <div class="menubar"><span>Ubuntu</span><span>9:41</span></div><div class="wall"></div>
+          <div class="notch" style="width:70%"><div class="panel" style="padding:10px"><div class="halo"></div>
+            <div class="line ok" style="margin:0;font-size:11px">✓ Approved from Linux</div></div></div>
+        </div><div class="base"></div>
+      </div>
+      <div class="oslabel">LINUX</div>
+    </div>
+  </div>
+</section>
 
-<section id="features"><div class="wrap">
-  <div class="center" style="max-width:56ch">
-    <div class="h2">Stop hunting terminal tabs.</div>
-    <p class="sub center">Running three, four, six Claude Code sessions at once? AgentBib gives you one calm place to see and control them all.</p>
-  </div>
-  <div class="feats">
-    <div class="feat">
-      <div class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 8a6 6 0 0112 0c0 7 3 8 3 8H3s3-1 3-8M10 21h4"/></svg></div>
-      <h3>Answer prompts &amp; questions</h3>
-      <p>Allow or Deny any session's tool request — and pick your answer when Claude asks you a question — right from the notch, or your phone. No more digging for the right terminal tab.</p>
-    </div>
-    <div class="feat">
-      <div class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="16" rx="2"/><path d="M3 9h18M8 4v16"/></svg></div>
-      <h3>Watch every session live</h3>
-      <p>Status, model, git branch, files &amp; diff, context fill — a card per session, read straight from the real transcripts.</p>
-    </div>
-    <div class="feat">
-      <div class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 13a9 9 0 1018 0"/><path d="M12 13V4"/></svg></div>
-      <h3>Real cost &amp; usage</h3>
-      <p>Your 5-hour and 7-day limits, plus <b>what you've spent today</b> in real money — on your Mac and phone, at zero extra API cost.</p>
-    </div>
-    <div class="feat">
-      <div class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 4h16v14H4z"/><path d="M8 9l3 3-3 3M13 15h4"/></svg></div>
-      <h3>Jump to the terminal</h3>
-      <p>Click a session card and the exact terminal window running it jumps to the front. iTerm, Terminal, Warp, VS Code &amp; more.</p>
-    </div>
-    <div class="feat">
-      <div class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="7" y="3" width="10" height="18" rx="2"/><path d="M11 18h2"/></svg></div>
-      <h3>On your phone, too</h3>
-      <p>Approve prompts and watch sessions from your <b>iPhone or Android</b> on the same Wi-Fi — the part a Mac-only tool structurally can't do. (Linux desktop, too.)</p>
-    </div>
-    <div class="feat">
-      <div class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 3v3M12 18v3M3 12h3M18 12h3"/><circle cx="12" cy="12" r="4"/></svg></div>
-      <h3>Rules, quiet hours &amp; delight</h3>
-      <p>Auto-allow safe commands, silence banners on your schedule, editable hotkeys — and a little bloom that celebrates when a job's done.</p>
+<!-- ============ RULES + NOTIFICATIONS ============ -->
+<section id="rules" style="background:linear-gradient(180deg,transparent,rgba(255,255,255,.015),transparent)">
+  <div class="wrap">
+    <div class="closeup">
+      <div class="rv">
+        <div class="eyebrow">It learns your yes</div>
+        <div class="h2">Approve once.<br><span class="accent">Never asked again.</span></div>
+        <p class="dek">Tell the notch "always allow reads in this repo" and it remembers — a real rules engine, per tool and per folder. A <b style="color:var(--danger)">destructive</b> command still stops for a human, every time. And when something needs you, a native macOS alert brings the exact prompt to you — approve right from the banner.</p>
+      </div>
+      <div class="showpanel rv d1">
+        <div class="setrow"><div class="si">✓</div><div><div class="stt">Always allow · Read, Grep, Glob</div><div class="sds">in ~/workspace — auto-approved</div></div><div class="toggle"></div></div>
+        <div class="setrow"><div class="si">✓</div><div><div class="stt">Always allow · Edit</div><div class="sds">in apps/frontend</div></div><div class="toggle"></div></div>
+        <div class="setrow"><div class="si" style="background:rgba(242,112,95,.14);color:var(--danger)">!</div><div><div class="stt">Destructive commands</div><div class="sds">always ask a human — never auto-allowed</div></div><div class="toggle off"></div></div>
+        <div class="setrow"><div class="si" style="background:rgba(90,169,240,.14);color:var(--info)">🔔</div><div><div class="stt">Native alerts</div><div class="sds">approve from the banner, hands-free</div></div><div class="toggle"></div></div>
+      </div>
     </div>
   </div>
-</div></section>
+</section>
 
-<section id="how"><div class="wrap">
-  <div class="center" style="max-width:56ch"><div class="h2">Live in two minutes.</div>
-  <p class="sub center">Download the app. It sets itself up. That's genuinely it.</p></div>
-  <div class="steps">
-    <div class="step"><div class="n">STEP 1</div><h3>Download &amp; open</h3><p>Notarized, universal (Apple Silicon + Intel), macOS 14+. It installs its own Claude Code hooks on first launch — no config.</p></div>
-    <div class="step"><div class="n">STEP 2</div><h3>Try it free for 7 days</h3><p>Full app, every feature, no card. It reuses your existing Claude sign-in — there's no API key to paste.</p></div>
-    <div class="step"><div class="n">STEP 3</div><h3>Buy once, keep forever</h3><p>Unlock right inside the app. One payment, lifetime license, all future updates included. Move it between your Macs anytime.</p></div>
+<!-- ============ SETTINGS COCKPIT ============ -->
+<section id="settings">
+  <div class="wrap">
+    <div class="center" style="text-align:center;max-width:56ch;margin-inline:auto;margin-bottom:40px">
+      <div class="eyebrow rv in">Yours to tune</div>
+      <div class="h2 rv">A cockpit, not a checkbox.</div>
+      <p class="dek rv d1" style="margin-inline:auto">Make the notch <em style="color:var(--bloom);font-style:normal">yours</em> — what it shows, how it moves, which prompts it answers, when it stays quiet. Density, colors, quiet hours, per-agent tints, global hotkeys, budget alerts. Every pixel is a preference.</p>
+    </div>
+    <div class="cockpit rv d2">
+      <div class="csidebar">
+        <div class="cgrp">App</div>
+        <div class="ctab on">◉ Overview</div>
+        <div class="ctab">⚙ General</div>
+        <div class="ctab">✦ Appearance</div>
+        <div class="cgrp">Agents</div>
+        <div class="ctab">▤ Sessions</div>
+        <div class="ctab">◔ Usage &amp; Cost</div>
+        <div class="ctab">⛨ Rules</div>
+        <div class="ctab">🔔 Notifications</div>
+        <div class="cgrp">System</div>
+        <div class="ctab">⌘ Shortcuts</div>
+        <div class="ctab">✎ About &amp; License</div>
+      </div>
+      <div class="cprev">
+        <div style="font-family:var(--mono);font-size:11px;color:var(--faint);letter-spacing:.12em;margin-bottom:6px">GENERAL › PROMPTS</div>
+        <div class="setrow"><div class="si">👆</div><div><div class="stt">Answer from the notch</div><div class="sds">Click an option to type the answer into your terminal</div></div><div class="toggle"></div></div>
+        <div class="setrow"><div class="si">▤</div><div><div class="stt">Review plans in the notch</div><div class="sds">Always show Claude's plans to approve, reject, or steer</div></div><div class="toggle"></div></div>
+        <div class="setrow"><div class="si">🌙</div><div><div class="stt">Quiet hours</div><div class="sds">Mute alerts 10pm — 8am</div></div><div class="toggle"></div></div>
+        <div class="setrow"><div class="si">✦</div><div><div class="stt">Bloomie celebrations</div><div class="sds">A little bloom burst when a session finishes</div></div><div class="toggle"></div></div>
+      </div>
+    </div>
   </div>
-</div></section>
+</section>
 
-<section id="pricing"><div class="wrap">
-  <div class="center" style="max-width:56ch"><div class="h2">One payment. Yours forever.</div>
-  <p class="sub center">No subscriptions, ever. Pick how many Macs you'll use it on — every tier has every feature.</p></div>
-  <div class="prices">
-    <div class="price">
-      <div class="name">Solo</div><div class="macs">1 Mac</div>
-      <div class="amt">₹999<small> once</small></div>
-      <ul>
-        <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><path d="M5 12l5 5L20 7"/></svg>Every feature, forever</li>
-        <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><path d="M5 12l5 5L20 7"/></svg>All future updates</li>
-        <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><path d="M5 12l5 5L20 7"/></svg>iPhone companion</li>
-      </ul>
-      <a href="#download" class="btn ghost">Start free trial</a>
+<!-- ============ COMPARE ============ -->
+<section id="compare" style="background:linear-gradient(180deg,transparent,rgba(79,204,133,.03),transparent)">
+  <div class="wrap">
+    <div class="center rv in" style="text-align:center;max-width:52ch;margin-inline:auto;margin-bottom:36px">
+      <div class="eyebrow">Honest comparison</div>
+      <div class="h2">Why AgentBib.</div>
     </div>
-    <div class="price pop">
-      <div class="tag">Most popular</div>
-      <div class="name">Duo</div><div class="macs">2 Macs</div>
-      <div class="amt">₹1,499<small> once</small></div>
-      <ul>
-        <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><path d="M5 12l5 5L20 7"/></svg>Everything in Solo</li>
-        <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><path d="M5 12l5 5L20 7"/></svg>Use on <b>2 Macs</b> — laptop + desktop</li>
-        <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><path d="M5 12l5 5L20 7"/></svg>Move licenses anytime</li>
-      </ul>
-      <a href="#download" class="btn primary">Start free trial</a>
-    </div>
-    <div class="price">
-      <div class="name">Team</div><div class="macs">5 Macs</div>
-      <div class="amt">₹2,499<small> once</small></div>
-      <ul>
-        <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><path d="M5 12l5 5L20 7"/></svg>Everything in Duo</li>
-        <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><path d="M5 12l5 5L20 7"/></svg>Use on <b>5 Macs</b></li>
-        <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><path d="M5 12l5 5L20 7"/></svg>Great for a small team</li>
-      </ul>
-      <a href="#download" class="btn ghost">Start free trial</a>
+    <div class="rv d1" style="overflow-x:auto;border:1px solid var(--edge);border-radius:16px">
+      <table class="cmp">
+        <thead><tr><th></th><th>AgentBib</th><th>Notch rivals</th></tr></thead>
+        <tbody>
+          <tr><td>Approve &amp; answer from the notch</td><td class="us">Yes</td><td class="them">Yes</td></tr>
+          <tr><td>Review &amp; steer plans</td><td class="us">Yes</td><td class="them">Yes</td></tr>
+          <tr><td>Approve from your phone</td><td class="us yes">iPhone + Android</td><td class="no">— none</td></tr>
+          <tr><td>Runs on Linux too</td><td class="us yes">Yes</td><td class="no">— Mac only</td></tr>
+          <tr><td>Updates</td><td class="us yes">Lifetime</td><td class="them">1 year, then frozen</td></tr>
+          <tr><td>Team license</td><td class="us yes">5 Macs</td><td class="them">3 Macs</td></tr>
+          <tr><td>Your code &amp; keys</td><td class="us yes">Never leave your Mac</td><td class="them">Local</td></tr>
+        </tbody>
+      </table>
     </div>
   </div>
-  <p class="center" style="color:var(--faint);font-size:13px;margin-top:22px">Prices in INR via Razorpay. 7-day free trial on every tier — no card to start.</p>
-</div></section>
+</section>
 
-<section id="faq"><div class="wrap">
-  <div class="center"><div class="h2">Questions</div></div>
-  <div class="faq">
-    <details open><summary>Do I need an API key?</summary><p>No. AgentBib securely reuses your existing Claude Code sign-in on your Mac to read your usage — there's nothing to paste, and your token never leaves your machine.</p></details>
-    <details><summary>Is it a subscription?</summary><p>Never. It's a one-time payment for a lifetime license, and all future updates are included. Buy once, own it.</p></details>
-    <details><summary>How many Macs can I use it on?</summary><p>Solo = 1, Duo = 2, Team = 5. You can move your license between Macs anytime — activate on a new one, deactivate an old one to free the slot.</p></details>
-    <details><summary>Does it work with agents other than Claude Code?</summary><p>Yes — Claude Code today, with Codex and other agents detected automatically and shown with their own color. More on the way.</p></details>
-    <details><summary>Is my data private?</summary><p>Everything runs locally on your Mac. The local server is loopback-only by default (not exposed to your network unless you opt in for phone access), and your sign-in token is only ever read to show your own usage.</p></details>
-    <details><summary>What do I need to run it?</summary><p>A Mac on macOS 14 or later — Apple Silicon or Intel. The download is notarized by Apple, so it opens cleanly.</p></details>
-  </div>
-</div></section>
-
-<section id="download"><div class="wrap">
-  <div class="final">
-    <svg viewBox="0 0 40 40" width="52" height="52" style="color:var(--accent)"><use href="#bloom"/></svg>
-    <div class="h2" style="margin-top:16px">Give your agents a home.</div>
-    <p class="sub center" style="margin:12px auto 26px">Download AgentBib, try every feature free for 7 days, and see why the notch was always the right place for this.</p>
-    <div class="cta">
-      <a href="#" class="btn primary" data-download>Download for macOS ↓</a>
+<!-- ============ PRICING ============ -->
+<section id="pricing">
+  <div class="wrap">
+    <div class="center rv in" style="text-align:center;max-width:52ch;margin-inline:auto">
+      <div class="eyebrow">Pay once. Keep it forever.</div>
+      <div class="h2">One price. No subscription.</div>
+      <p class="dek rv d1" style="margin-inline:auto">A 7-day trial with everything unlocked. Then a single payment — and every update after, free.</p>
     </div>
-    <p class="trust">Universal · macOS 14+ · notarized · free 7-day trial</p>
-  </div>
-</div></section>
-
-<footer><div class="wrap">
-  <div class="row">
-    <a class="brand" href="#top" style="font-size:15px"><svg viewBox="0 0 40 40" style="color:var(--accent)"><use href="#bloom"/></svg>AgentBib</a>
-    <span style="color:var(--faint)">Your AI coding agents, in the notch.</span>
-    <div class="legal">
-      <a href="privacy.html">Privacy</a>
-      <a href="terms.html">Terms</a>
-      <a href="refund.html">Refunds</a>
-      <a href="mailto:swainbibhuti362@gmail.com">Contact</a>
+    <div class="prices">
+      <div class="price rv d1"><span class="tag">Solo</span><div class="pn">Solo</div><div class="macs">1 Mac</div>
+        <div class="amt tnum">₹999</div><div class="macs">one-time · lifetime updates</div>
+        <ul><li>Every notch feature</li><li>iPhone + Android remote</li><li>Usage &amp; cost</li><li>Lifetime updates</li></ul>
+        <a class="btn ghost" data-dl style="justify-content:center">Start free trial</a></div>
+      <div class="price pop rv d2"><span class="tag">Most popular</span><div class="pn">Duo</div><div class="macs">2 Macs</div>
+        <div class="amt tnum">₹1,499</div><div class="macs">one-time · lifetime updates</div>
+        <ul><li>Everything in Solo</li><li>2 Macs — desktop + laptop</li><li>Move licenses anytime</li><li>Priority support</li></ul>
+        <a class="btn primary" data-dl style="justify-content:center">Start free trial</a></div>
+      <div class="price rv d3"><span class="tag">Team</span><div class="pn">Team</div><div class="macs">5 Macs</div>
+        <div class="amt tnum">₹2,499</div><div class="macs">one-time · lifetime updates</div>
+        <ul><li>Everything in Duo</li><li>5 Macs for your team</li><li>Best per-seat value</li><li>Priority support</li></ul>
+        <a class="btn ghost" data-dl style="justify-content:center">Start free trial</a></div>
     </div>
   </div>
-  <p class="disc">© <span id="yr">2026</span> AgentBib — operated by Bibhuti Swain, Gujarat, India. Not affiliated with Anthropic. Claude and Claude Code are trademarks of Anthropic. macOS and the MacBook are trademarks of Apple Inc.</p>
-</div></footer>
+</section>
+
+<!-- ============ DOWNLOAD ============ -->
+<section id="download">
+  <div class="wrap">
+    <div class="rv in"><svg viewBox="0 0 40 40" width="52" height="52" class="bloom-breathe" style="color:var(--bloom)"><use href="#bloom"/></svg></div>
+    <div class="h2 rv" style="margin-top:14px">Bring your agents home.</div>
+    <p class="dek rv d1" style="margin-inline:auto;text-align:center">Download AgentBib, launch it once, and every Claude Code session lands in your notch. No config, no accounts, no cloud.</p>
+    <div class="cta rv d2" style="margin-top:26px"><a class="btn primary" data-dl>Download for Mac</a><a class="btn ghost" href="#pricing">See pricing</a></div>
+    <div class="microtrust rv d2" style="margin-top:16px">notarized · macOS 13+ · Apple Silicon &amp; Intel</div>
+  </div>
+</section>
+
+<footer>
+  <div class="wrap">
+    <div class="frow">
+      <a class="brand" href="#top"><svg viewBox="0 0 40 40" style="color:var(--bloom)"><use href="#bloom"/></svg>AgentBib</a>
+      <div class="legal"><a href="privacy.html">Privacy</a><a href="terms.html">Terms</a><a href="refund.html">Refund</a><a href="mailto:swainbibhuti362@gmail.com">Support</a></div>
+    </div>
+    <p class="disc">© <span id="yr">2026</span> AgentBib — operated by Bibhuti Swain, Gujarat, India. Not affiliated with Anthropic. Claude and Claude Code are trademarks of Anthropic. macOS and the MacBook are trademarks of Apple Inc.</p>
+  </div>
+</footer>
 
 <script>
-  // scroll-reveal for sections
-  var io=new IntersectionObserver(function(es){es.forEach(function(e){if(e.isIntersecting){e.target.classList.add('reveal');io.unobserve(e.target)}})},{threshold:.12});
-  document.querySelectorAll('section .wrap > *').forEach(function(el){io.observe(el)});
-  // download buttons — wire to your GitHub Releases .dmg when published
-  // Direct download of the current notarized build. When you publish a new version, update
-  // this (or add a stable-named AgentBib.dmg asset and use …/releases/latest/download/AgentBib.dmg).
+(function(){
+  // year
+  var y=document.getElementById('yr'); if(y) y.textContent=new Date().getFullYear();
+
+  // hero headline — word-by-word reveal
+  var words="Your AI agents live in the notch.".split(" ");
+  var hH=document.getElementById('heroH');
+  if(hH){ hH.innerHTML=words.map(function(w,i){
+    var em=(w==="notch."); return '<span class="word" style="animation-delay:'+(0.15+i*0.08)+'s'+'">'+(em?'<em>':'')+w+(em?'</em>':'')+'</span>';
+  }).join(" "); }
+
+  // nav solidify on scroll
+  var nav=document.getElementById('nav');
+  addEventListener('scroll',function(){ nav.classList.toggle('solid', scrollY>40); },{passive:true});
+
+  // reveal on scroll
+  var io=new IntersectionObserver(function(es){es.forEach(function(e){if(e.isIntersecting){e.target.classList.add('in');io.unobserve(e.target);}});},{threshold:.14});
+  document.querySelectorAll('.rv:not(.in)').forEach(function(el){io.observe(el);});
+
+  // usage rings fill when in view
+  var rio=new IntersectionObserver(function(es){es.forEach(function(e){ if(e.isIntersecting){
+    e.target.querySelectorAll('.rf').forEach(function(c){ var p=+c.dataset.pct; c.style.strokeDashoffset=264-(264*p/100); });
+    // cost counter tick-up
+    var cc=document.getElementById('costc'); if(cc){ var t=8.42,s=0,iv=setInterval(function(){ s+=t/40; if(s>=t){s=t;clearInterval(iv);} cc.textContent=s.toFixed(2); },26); }
+    rio.disconnect();
+  }});},{threshold:.4});
+  var rings=document.getElementById('rings'); if(rings) rio.observe(rings);
+
+  // ---- the pinned notch performance: scroll progress -> stage ----
+  var track=document.getElementById('pinTrack'),
+      sts=document.querySelectorAll('#stageWrap .st'),
+      dots=document.querySelectorAll('#pdots span'),
+      ptitle=document.getElementById('ptitle'), psub=document.getElementById('psub'),
+      pcap=document.getElementById('pcap'), pstatus=document.getElementById('pstatus'),
+      glow=document.getElementById('glowfield');
+  var caps=[
+    ["It lives in your notch.","Your agent works away up top. You stay in your editor — glancing, never switching."],
+    ["It needs permission?","The card appears in the notch — not a buried tab. Allow, Deny, or Always, in one tap."],
+    ["It shows you the plan first.","Before it touches your code, read the plan. Approve it — or send back changes."],
+    ["Claude asks you a question?","Pick the answer right from the notch. It types your choice into the terminal for you."],
+    ["Not quite right?","Steer it — reject with a note and it course-corrects. You're the director, not a bystander."],
+    ["Done.","Approved, answered, shipped — and you never once left your flow."]
+  ];
+  var tints=["rgba(224,138,66,.12)","rgba(237,176,77,.14)","rgba(158,124,240,.14)","rgba(237,176,77,.14)","rgba(237,176,77,.14)","rgba(79,204,133,.16)"];
+  var N=6, cur=-1, tick=false;
+  function paint(){
+    tick=false;
+    if(!track) return;
+    var r=track.getBoundingClientRect(), total=track.offsetHeight-innerHeight,
+        p=Math.min(1,Math.max(0,(-r.top)/total)), s=Math.min(N-1,Math.floor(p*N+0.0001));
+    if(s===cur) return; cur=s;
+    sts.forEach(function(el){el.classList.toggle('on', +el.dataset.s===s);});
+    dots.forEach(function(d,i){d.classList.toggle('on',i===s);});
+    if(glow) glow.style.background="radial-gradient(50% 40% at 50% 42%,"+tints[s]+",transparent 70%)";
+    if(pstatus) pstatus.textContent = s===5?"· done":s===0?"· working":"· waiting on you";
+    if(pstatus) pstatus.style.color = s===5?"var(--bloom)":s===0?"var(--info)":"var(--amber)";
+    pcap.classList.add('swap');
+    setTimeout(function(){ ptitle.textContent=caps[s][0]; psub.textContent=caps[s][1]; pcap.classList.remove('swap'); },180);
+  }
+  addEventListener('scroll',function(){ if(!tick){tick=true;requestAnimationFrame(paint);} },{passive:true});
+  addEventListener('resize',paint); paint();
+
+  // download links (wire to the stable release on the real page)
   var DMG="https://github.com/bibhuti9/agentbib-releases/releases/latest/download/AgentBib.dmg";
-  document.querySelectorAll('[href="#download"],[data-download]').forEach(function(a){
-    if(DMG!=="#"){a.setAttribute('href',DMG)}
-  });
+  document.querySelectorAll('[data-dl]').forEach(function(a){ a.setAttribute('href',DMG); });
+})();
 </script>
+
 </body>
 </html>
